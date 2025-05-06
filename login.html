@@ -1,0 +1,28 @@
+function doLogin(request) {
+  const params = JSON.parse(request.postData.contents);
+  const username = params.username;
+  const password = params.password;
+
+  const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Users");
+  const users = sheet.getDataRange().getValues();
+
+  for (let i = 1; i < users.length; i++) {
+    const [storedUsername, storedHash, role] = users[i];
+    if (storedUsername === username) {
+      const isValid = Utilities.computeDigest(Utilities.DigestAlgorithm.SHA_1, password)
+                          .map(b => ('0' + (b & 0xFF).toString(16)).slice(-2))
+                          .join('') === storedHash;
+
+      if (isValid) {
+        return ContentService.createTextOutput(JSON.stringify({ success: true, role }))
+                             .setMimeType(ContentService.MimeType.JSON);
+      } else {
+        return ContentService.createTextOutput(JSON.stringify({ success: false, message: "Incorrect password" }))
+                             .setMimeType(ContentService.MimeType.JSON);
+      }
+    }
+  }
+
+  return ContentService.createTextOutput(JSON.stringify({ success: false, message: "User not found" }))
+                       .setMimeType(ContentService.MimeType.JSON);
+}
