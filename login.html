@@ -25,30 +25,29 @@
   <div id="loginStatus" style="color: red;"></div>
 
   <script>
-    // ✅ Replace this with YOUR OWN correct Web App URL
-   const API_URL = "https://script.google.com/macros/s/AKfycby2S_bPjhhw24qv-dTjLeHZ3CvzbGGTqAGIH75_DH7Kt6N2v1WJ1KbspFt4f5WH5LKUAw/exec";
+    const API_URL = "https://script.google.com/macros/s/AKfycby2S_bPjhhw24qv-dTjLeHZ3CvzbGGTqAGIH75_DH7Kt6N2v1WJ1KbspFt4f5WH5LKUAw/exec";
+
     async function login() {
       const username = document.getElementById("username").value.trim();
       const password = document.getElementById("password").value.trim();
 
-      try {
-        const response = await fetch(API_URL + "?action=doLogin", {
-          method: "POST",
-          body: JSON.stringify({ username, password }),
-          headers: { "Content-Type": "application/json" }
-        });
+      // Send POST request to Google Apps Script API
+      const response = await fetch(API_URL, {
+        method: "POST",
+        body: JSON.stringify({ action: 'doLogin', username, password }),
+        headers: { "Content-Type": "application/json" }
+      });
 
-        const result = await response.json();
+      // Parse the response
+      const result = await response.json();
 
-        if (result.success) {
-          localStorage.setItem("role", result.role);
-          localStorage.setItem("username", username);
-          window.location.href = "index.html";
-        } else {
-          document.getElementById("loginStatus").textContent = result.message;
-        }
-      } catch (err) {
-        document.getElementById("loginStatus").textContent = "Network error or API not responding.";
+      // Handle the response based on success or failure
+      if (result.success) {
+        localStorage.setItem("role", result.role);
+        localStorage.setItem("username", username);
+        window.location.href = "index.html"; // Redirect to dashboard or homepage
+      } else {
+        document.getElementById("loginStatus").textContent = result.message; // Show error message
       }
     }
   </script>
