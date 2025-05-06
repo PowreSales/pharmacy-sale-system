@@ -1,38 +1,62 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Pharmacy Sales</title>
-  <link rel="stylesheet" href="style.css" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pharmacy Sales App</title>
+  <style>
+    body { font-family: Arial, sans-serif; padding: 20px; }
+    section { margin-bottom: 30px; }
+    .hidden { display: none; }
+    button { margin: 5px; }
+  </style>
 </head>
-<script>
-  if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('service-worker.js')
-      .then(() => console.log('Service Worker Registered'));
-  }
-</script>
-<link rel="manifest" href="manifest.json" />
 <body>
-  <div class="container">
-    <h1>Pharmacy Inventory</h1>
-    <button onclick="loadInventory()">Refresh Inventory</button>
-    <div id="inventory-list"></div>
+  <h1>Pharmacy Sales System</h1>
+  <p id="welcome"></p>
 
-    <hr/>
-    <h2>Record Sale</h2>
-    <form id="sales-form" onsubmit="handleSale(event)">
-      <input type="text" placeholder="Item Name" id="item-name" required />
-      <input type="number" placeholder="Quantity" id="item-qty" required />
-      <input type="number" placeholder="Price" id="item-price" required />
-      <select id="payment-mode">
-        <option value="Cash">Cash</option>
-        <option value="Momo">Momo</option>
-      </select>
-      <button type="submit">Save Sale</button>
-    </form>
-    <div id="sync-status" style="margin-top: 1rem; color: green;"></div>
-  </div>
-  <script src="script.js"></script>
+  <button onclick="logout()">Logout</button>
+
+  <!-- Sales Form -->
+  <section id="salesSection">
+    <h2>Sales</h2>
+    <!-- Add your sales form content here -->
+    <p>[Sales Form Goes Here]</p>
+  </section>
+
+  <!-- Inventory Section (Admin Only) -->
+  <section id="inventorySection">
+    <h2>Inventory</h2>
+    <!-- Add your inventory form here -->
+    <p>[Inventory Form Goes Here]</p>
+  </section>
+
+  <!-- Summary Section (Admin Only) -->
+  <section id="summarySection">
+    <h2>Sales Summary</h2>
+    <!-- Add your summary form here -->
+    <p>[Sales Summary Goes Here]</p>
+  </section>
+
+  <script>
+    const role = localStorage.getItem("role");
+    const username = localStorage.getItem("username");
+
+    if (!role || !username) {
+      window.location.href = "login.html";
+    }
+
+    document.getElementById("welcome").textContent = "Welcome, " + username + " (" + role + ")";
+
+    if (role === "Salesperson") {
+      document.getElementById("inventorySection").classList.add("hidden");
+      document.getElementById("summarySection").classList.add("hidden");
+    }
+
+    function logout() {
+      localStorage.clear();
+      window.location.href = "login.html";
+    }
+  </script>
 </body>
 </html>
