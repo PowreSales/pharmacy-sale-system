@@ -1,28 +1,39 @@
-function doLogin(request) {
-  const params = JSON.parse(request.postData.contents);
-  const username = params.username;
-  const password = params.password;
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Login</title>
+</head>
+<body>
+  <h2>Login</h2>
+  <input type="text" id="username" placeholder="Username" />
+  <input type="password" id="password" placeholder="Password" />
+  <button onclick="login()">Login</button>
+  <div id="loginStatus"></div>
 
-  const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Users");
-  const users = sheet.getDataRange().getValues();
+  <script>
+    const API_URL = "https://script.google.com/macros/s/YOUR_DEPLOYED_URL/exec?action=doLogin"; // Replace this
 
-  for (let i = 1; i < users.length; i++) {
-    const [storedUsername, storedHash, role] = users[i];
-    if (storedUsername === username) {
-      const isValid = Utilities.computeDigest(Utilities.DigestAlgorithm.SHA_1, password)
-                          .map(b => ('0' + (b & 0xFF).toString(16)).slice(-2))
-                          .join('') === storedHash;
+    async function login() {
+      const username = document.getElementById("username").value.trim();
+      const password = document.getElementById("password").value.trim();
 
-      if (isValid) {
-        return ContentService.createTextOutput(JSON.stringify({ success: true, role }))
-                             .setMimeType(ContentService.MimeType.JSON);
+      const response = await fetch(API_URL, {
+        method: "POST",
+        body: JSON.stringify({ username, password }),
+        headers: { "Content-Type": "application/json" }
+      });
+
+      const result = await response.json();
+
+      if (result.success) {
+        localStorage.setItem("role", result.role);
+        localStorage.setItem("username", username);
+        window.location.href = "index.html";
       } else {
-        return ContentService.createTextOutput(JSON.stringify({ success: false, message: "Incorrect password" }))
-                             .setMimeType(ContentService.MimeType.JSON);
+        document.getElementById("loginStatus").textContent = result.message;
       }
     }
-  }
-
-  return ContentService.createTextOutput(JSON.stringify({ success: false, message: "User not found" }))
-                       .setMimeType(ContentService.MimeType.JSON);
-}
+  </script>
+</body>
+</html>
