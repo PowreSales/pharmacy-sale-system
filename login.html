@@ -31,23 +31,26 @@
       const username = document.getElementById("username").value.trim();
       const password = document.getElementById("password").value.trim();
 
-      // Send POST request to Google Apps Script API
-      const response = await fetch(API_URL, {
-        method: "POST",
-        body: JSON.stringify({ action: 'doLogin', username, password }),
-        headers: { "Content-Type": "application/json" }
-      });
+      // 👇 This is where the fetch block goes
+      try {
+        const response = await fetch(API_URL, {
+          method: "POST",
+          body: JSON.stringify({ action: 'doLogin', username, password }),
+          headers: { "Content-Type": "application/json" }
+        });
 
-      // Parse the response
-      const result = await response.json();
+        const result = await response.json();
 
-      // Handle the response based on success or failure
-      if (result.success) {
-        localStorage.setItem("role", result.role);
-        localStorage.setItem("username", username);
-        window.location.href = "index.html"; // Redirect to dashboard or homepage
-      } else {
-        document.getElementById("loginStatus").textContent = result.message; // Show error message
+        if (result.success) {
+          localStorage.setItem("role", result.role);
+          localStorage.setItem("username", username);
+          window.location.href = "index.html";
+        } else {
+          document.getElementById("loginStatus").textContent = result.message;
+        }
+
+      } catch (error) {
+        document.getElementById("loginStatus").textContent = "Network error or API not responding.";
       }
     }
   </script>
