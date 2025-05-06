@@ -3,71 +3,93 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Pharmacy App</title>
+  <title>Record Sale</title>
   <style>
-    body { font-family: sans-serif; padding: 20px; }
-    .section { margin-bottom: 20px; }
-    button { padding: 8px 16px; margin-top: 8px; }
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+    }
+    .form-group {
+      margin-bottom: 15px;
+    }
+    label {
+      display: block;
+      margin-bottom: 5px;
+    }
+    input, select {
+      width: 100%;
+      padding: 8px;
+      font-size: 1rem;
+    }
+    button {
+      padding: 10px 20px;
+      font-size: 1rem;
+      background-color: #28a745;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+    #message {
+      margin-top: 15px;
+      font-weight: bold;
+    }
   </style>
 </head>
 <body>
-  <h1>Pharmacy Dashboard</h1>
 
-  <div class="section">
-    <h3>Add Inventory</h3>
-    <input type="text" id="itemName" placeholder="Item name" />
-    <input type="number" id="itemQty" placeholder="Quantity" />
-    <button onclick="addInventory()">Add</button>
+  <h2>Sales Form</h2>
+
+  <div class="form-group">
+    <label for="saleItem">Item Name</label>
+    <input type="text" id="saleItem" placeholder="e.g., Paracetamol" />
   </div>
 
-  <div class="section">
-    <h3>Record Sale</h3>
-    <input type="text" id="saleItem" placeholder="Item sold" />
-    <input type="number" id="saleQty" placeholder="Quantity sold" />
-    <button onclick="recordSale()">Record Sale</button>
+  <div class="form-group">
+    <label for="saleQty">Quantity Sold</label>
+    <input type="number" id="saleQty" placeholder="e.g., 2" />
   </div>
 
-  <div class="section">
-    <h3>Sales Summary</h3>
-    <button onclick="getSummary()">Get Summary</button>
-    <pre id="summaryResult"></pre>
-  </div>
+  <button onclick="submitSale()">Submit Sale</button>
+
+  <div id="message"></div>
 
   <script>
     const API_URL = 'https://script.google.com/macros/s/AKfycby2S_bPjhhw24qv-dTjLeHZ3CvzbGGTqAGIH75_DH7Kt6N2v1WJ1KbspFt4f5WH5LKUAw/exec';
 
-    async function addInventory() {
-      const item = document.getElementById('itemName').value;
-      const qty = parseInt(document.getElementById('itemQty').value, 10);
-      const response = await fetch(API_URL, {
-        method: 'POST',
-        body: JSON.stringify({ action: 'addInventory', item, qty }),
-        headers: { 'Content-Type': 'application/json' }
-      });
-      const result = await response.json();
-      alert(result.message);
-    }
-
-    async function recordSale() {
-      const item = document.getElementById('saleItem').value;
+    async function submitSale() {
+      const item = document.getElementById('saleItem').value.trim();
       const qty = parseInt(document.getElementById('saleQty').value, 10);
-      const response = await fetch(API_URL, {
-        method: 'POST',
-        body: JSON.stringify({ action: 'recordSale', item, qty }),
-        headers: { 'Content-Type': 'application/json' }
-      });
-      const result = await response.json();
-      alert(result.message);
-    }
+      const messageDiv = document.getElementById('message');
 
-    async function getSummary() {
-      const response = await fetch(API_URL, {
-        method: 'POST',
-        body: JSON.stringify({ action: 'getSummary' }),
-        headers: { 'Content-Type': 'application/json' }
-      });
-      const result = await response.json();
-      document.getElementById('summaryResult').textContent = JSON.stringify(result, null, 2);
+      if (!item || isNaN(qty) || qty <= 0) {
+        messageDiv.textContent = 'Please enter a valid item and quantity.';
+        messageDiv.style.color = 'red';
+        return;
+      }
+
+      try {
+        const response = await fetch(API_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ action: 'recordSale', item, qty })
+        });
+
+        const result = await response.json();
+
+        if (result.success) {
+          messageDiv.textContent = result.message || 'Sale recorded successfully!';
+          messageDiv.style.color = 'green';
+          document.getElementById('saleItem').value = '';
+          document.getElementById('saleQty').value = '';
+        } else {
+          messageDiv.textContent = result.message || 'Error recording sale.';
+          messageDiv.style.color = 'red';
+        }
+
+      } catch (error) {
+        messageDiv.textContent = 'Network error or API not responding.';
+        messageDiv.style.color = 'red';
+      }
     }
   </script>
 </body>
