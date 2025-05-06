@@ -1,4 +1,4 @@
-const apiBase = "PASTE_YOUR_DEPLOYMENT_URL_HERE";
+const apiBase = "https://script.google.com/macros/s/AKfycby2S_bPjhhw24qv-dTjLeHZ3CvzbGGTqAGIH75_DH7Kt6N2v1WJ1KbspFt4f5WH5LKUAw/exec";
 
 async function loadInventory() {
   const res = await fetch(`${apiBase}?action=getInventory`);
