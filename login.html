@@ -5,111 +5,63 @@
   <title>Login</title>
   <style>
     body {
-      font-family: sans-serif;
+      font-family: Arial, sans-serif;
+      max-width: 300px;
+      margin: 40px auto;
       padding: 20px;
+      border: 1px solid #ccc;
+      border-radius: 10px;
     }
     input, button {
-      display: block;
-      margin: 10px 0;
-      padding: 10px;
       width: 100%;
-      max-width: 300px;
+      padding: 10px;
+      margin: 8px 0;
+    }
+    #loginStatus {
+      color: red;
+      margin-top: 10px;
     }
   </style>
 </head>
 <body>
   <h2>Login</h2>
-  <input type="text" id="username" placeholder="Username" />
-  <input type="password" id="password" placeholder="Password" />
+  <input type="text" id="username" placeholder="Username" required />
+  <input type="password" id="password" placeholder="Password" required />
   <button onclick="login()">Login</button>
-  <div id="loginStatus" style="color: red;"></div>
+  <div id="loginStatus"></div>
 
   <script>
-    const API_URL = "https://script.google.com/macros/s/AKfycby2S_bPjhhw24qv-dTjLeHZ3CvzbGGTqAGIH75_DH7Kt6N2v1WJ1KbspFt4f5WH5LKUAw/exec";
+    const API_URL = "https://script.google.com/macros/s/PASTE_YOUR_DEPLOYMENT_URL_HERE/exec";
 
     async function login() {
       const username = document.getElementById("username").value.trim();
       const password = document.getElementById("password").value.trim();
+      const loginStatus = document.getElementById("loginStatus");
 
-      try {
-        const response = await fetch(API_URL, {
-          method: "POST",
-          body: JSON.stringify({ action: "doLogin", username, password }),
-          headers: { "Content-Type": "application/json" }
-        });
-
-        const result = await response.json();
-
-        if (result.success) {
-          localStorage.setItem("role", result.role);
-          localStorage.setItem("username", username);
-          window.location.href = "index.html";
-        } else {
-          document.getElementById("loginStatus").textContent = result.message;
-        }
-      } catch (error) {
-        document.getElementById("loginStatus").textContent = "Network error or API not responding.";
-        console.error(error);
+      if (!username || !password) {
+        loginStatus.textContent = "Username and password required.";
+        return;
       }
-    }
-  </script>
-</body>
-</html>
-<!DOCTYPE html>
-<html>
-<head>
-  <meta charset="UTF-8">
-  <title>Login</title>
-  <style>
-    body {
-      font-family: sans-serif;
-      padding: 20px;
-    }
-    input, button {
-      display: block;
-      margin: 10px 0;
-      padding: 10px;
-      width: 100%;
-      max-width: 300px;
-    }
-  </style>
-<link rel="icon" href="favicon.ico" type="image/x-icon">
 
-</head>
-<body>
-  <h2>Login</h2>
-  <input type="text" id="username" placeholder="Username" />
-  <input type="password" id="password" placeholder="Password" />
-  <button onclick="login()">Login</button>
-  <div id="loginStatus" style="color: red;"></div>
-
-  <script>
-    const API_URL = "https://script.google.com/macros/s/AKfycby2S_bPjhhw24qv-dTjLeHZ3CvzbGGTqAGIH75_DH7Kt6N2v1WJ1KbspFt4f5WH5LKUAw/exec";
-
-    async function login() {
-      const username = document.getElementById("username").value.trim();
-      const password = document.getElementById("password").value.trim();
-
-      // 👇 This is where the fetch block goes
       try {
         const response = await fetch(API_URL, {
           method: "POST",
-          body: JSON.stringify({ action: 'doLogin', username, password }),
-          headers: { "Content-Type": "application/json" }
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ action: "doLogin", username, password })
         });
 
         const result = await response.json();
 
         if (result.success) {
-          localStorage.setItem("role", result.role);
           localStorage.setItem("username", username);
+          localStorage.setItem("role", result.role);
           window.location.href = "index.html";
         } else {
-          document.getElementById("loginStatus").textContent = result.message;
+          loginStatus.textContent = result.message || "Login failed.";
         }
-
       } catch (error) {
-        document.getElementById("loginStatus").textContent = "Network error or API not responding.";
+        console.error(error);
+        loginStatus.textContent = "Network error or server not responding.";
       }
     }
   </script>
