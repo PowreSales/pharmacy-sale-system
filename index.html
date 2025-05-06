@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Pharmacy Sales</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="container">
+    <h1>Pharmacy Inventory</h1>
+    <button onclick="loadInventory()">Refresh Inventory</button>
+    <div id="inventory-list"></div>
+
+    <hr/>
+    <h2>Record Sale</h2>
+    <form id="sales-form" onsubmit="handleSale(event)">
+      <input type="text" placeholder="Item Name" id="item-name" required />
+      <input type="number" placeholder="Quantity" id="item-qty" required />
+      <input type="number" placeholder="Price" id="item-price" required />
+      <select id="payment-mode">
+        <option value="Cash">Cash</option>
+        <option value="Momo">Momo</option>
+      </select>
+      <button type="submit">Save Sale</button>
+    </form>
+    <div id="sync-status" style="margin-top: 1rem; color: green;"></div>
+  </div>
+  <script src="script.js"></script>
+</body>
+</html>
